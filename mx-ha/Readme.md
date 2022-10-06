@@ -16,6 +16,8 @@ For AWS: https://github.com/ssahadevan-mendix/aws-mendix-quickstart
 ```
 
 ## Scale Application to 2 replicas ()
+ From Developer Portal --> Details --> Scale
+
 
 ## Test: Bring down all deployments in one node
 ### Scale down all deployments
@@ -29,7 +31,7 @@ done
 
 ### Check traffic to Mendix APP URL
 ```
-URL=<TODO> - get from ingress output (kubectl get ing -n mendixns)
+URL=vt9ro343.p-aks.mx4pc.nl - get from ingress output (kubectl get ing -n mendixns)
 
 for i in $( seq 1 60); do
 curl --head -X GET $URL | head -1
@@ -46,8 +48,7 @@ kubectl scale deploy $i --replicas=1
 done
 
 ```
-
 ### Check logs of each POD
-
+kubectl logs [mendix-master-pod] -c mendix
 
 
