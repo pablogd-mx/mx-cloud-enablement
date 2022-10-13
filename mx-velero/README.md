@@ -15,9 +15,6 @@ https://velero.io/docs/v1.8/basic-install/
 https://github.com/vmware-tanzu/velero-plugin-for-aws
 
 
-
-
-
 ## Creating a new S3 Bucket to Store Velero Backups.
 ```
 BUCKET=<YOUR_BUCKET>
@@ -41,6 +38,7 @@ aws iam create-user --user-name velero
 ```
 
 ## Attach Policy to velero user to access S3 bucket ( see policy example in link above)
+
 ```
 aws iam put-user-policy \
   --user-name velero \
@@ -62,5 +60,26 @@ velero install \
     --snapshot-location-config region=$REGION \
     --secret-file ./credentials-velero
 ```
+## Create a new backup location ( optional but highly recommended)
+### First create a secret with Velero Credentials obtained in previous step
+```
+kubectl create secret generic -n velero [nameofyoursecret] --from-file=aws=credentials-velero
 
+Example:
+kubectl create secret generic -n velero bsl-credentials --from-file=aws=credentials-velero
+```
+### Create a new backup location
+```
+velero backup create [nameofbackup] --storage-location [nameofstoragelocation]
 
+velero backup create mendix-full --storage-location bsl-mendix
+```
+
+### Restoring from Backup
+```
+velero restore create --from-backup [nameofbackup] --status-include-resources=storageinstances.privatecloud.mendix.com,storageplans.privatecloud.mendix.com,builds.privatecloud.mendix.com,mendixapps.privatecloud.mendix.com
+```
+```
+Example:
+velero restore create --from-backup demo-mxdr --status-include-resources=storageinstances.privatecloud.mendix.com,storageplans.privatecloud.mendix.com,builds.privatecloud.mendix.com,mendixapps.privatecloud.mendix.com
+```
